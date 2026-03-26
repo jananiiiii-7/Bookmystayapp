@@ -4,12 +4,12 @@ import java.util.Map;
 /**
  * ==============================================================
  * Book My Stay App
- * UC3: Centralized Room Inventory Management
+ * UC4: Room Search & Availability Check
  * ==============================================================
  *
- * Demonstrates centralized inventory using HashMap.
+ * Demonstrates read-only search over centralized inventory.
  *
- * @version 3.0
+ * @version 4.0
  */
 
 // -------------------- ABSTRACT ROOM --------------------
@@ -51,7 +51,7 @@ class SuiteRoom extends Room {
     }
 }
 
-// -------------------- INVENTORY CLASS --------------------
+// -------------------- INVENTORY --------------------
 class RoomInventory {
 
     private Map<String, Integer> roomAvailability;
@@ -70,9 +70,41 @@ class RoomInventory {
     public Map<String, Integer> getRoomAvailability() {
         return roomAvailability;
     }
+}
 
-    public void updateAvailability(String roomType, int count) {
-        roomAvailability.put(roomType, count);
+// -------------------- SEARCH SERVICE --------------------
+class RoomSearchService {
+
+    public void searchAvailableRooms(
+            RoomInventory inventory,
+            Room singleRoom,
+            Room doubleRoom,
+            Room suiteRoom) {
+
+        Map<String, Integer> availability = inventory.getRoomAvailability();
+
+        System.out.println("Room Search\n");
+
+        // Single Room
+        if (availability.get("Single") > 0) {
+            System.out.println("Single Room:");
+            singleRoom.displayRoomDetails();
+            System.out.println("Available: " + availability.get("Single") + "\n");
+        }
+
+        // Double Room
+        if (availability.get("Double") > 0) {
+            System.out.println("Double Room:");
+            doubleRoom.displayRoomDetails();
+            System.out.println("Available: " + availability.get("Double") + "\n");
+        }
+
+        // Suite Room
+        if (availability.get("Suite") > 0) {
+            System.out.println("Suite Room:");
+            suiteRoom.displayRoomDetails();
+            System.out.println("Available: " + availability.get("Suite"));
+        }
     }
 }
 
@@ -81,27 +113,18 @@ public class BookMyStayApp {
 
     public static void main(String[] args) {
 
-        System.out.println("Hotel Room Inventory Status\n");
-
         Room singleRoom = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
         Room suiteRoom = new SuiteRoom();
 
         RoomInventory inventory = new RoomInventory();
+        RoomSearchService searchService = new RoomSearchService();
 
-        System.out.println("Single Room:");
-        singleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " +
-                inventory.getRoomAvailability().get("Single") + "\n");
-
-        System.out.println("Double Room:");
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " +
-                inventory.getRoomAvailability().get("Double") + "\n");
-
-        System.out.println("Suite Room:");
-        suiteRoom.displayRoomDetails();
-        System.out.println("Available Rooms: " +
-                inventory.getRoomAvailability().get("Suite"));
+        searchService.searchAvailableRooms(
+                inventory,
+                singleRoom,
+                doubleRoom,
+                suiteRoom
+        );
     }
 }
